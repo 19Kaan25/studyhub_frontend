@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, type Ref, ref } from 'vue'
+import axios from 'axios'
 
 interface Resource {
   id: number
@@ -28,6 +29,19 @@ const studyResources = ref<Resource[]>([
     url: 'https://www.youtube.com/watch?v=85aAoUil_cI&list=PLt0vU-SI8XGZK_AruyDCZWDR-1XBcOrSI&index=4',
   },
 ])
+
+type Demo = { name: string; age: number }
+
+const demos: Ref<Demo[]> = ref([])
+
+function requestDemos(): void {
+  axios
+    .get<Demo[]>(`https://studyhub-frontend-f45v.onrender.com/demo`)
+    .then((response) => (demos.value = response.data))
+    .catch((error) => console.log(error))
+}
+
+onMounted(() => requestDemos())
 </script>
 
 <template>
@@ -39,6 +53,12 @@ const studyResources = ref<Resource[]>([
         <strong>{{ resource.title }}</strong> ({{ resource.type }})
         <br />
         <a :href="resource.url" target="_blank">Zur Ressource</a>
+      </li>
+    </ul>
+    <ul>
+      <li v-for="resource in demos" :key="resource.name">
+        <strong>{{ resource.name }}</strong> ({{ resource.age }})
+        <br />
       </li>
     </ul>
   </div>
