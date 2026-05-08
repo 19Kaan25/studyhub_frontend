@@ -36,7 +36,7 @@ const demos: Ref<Demo[]> = ref([])
 
 function requestDemos(): void {
   axios
-    .get<Demo[]>(`https://studyhub-frontend-f45v.onrender.com/demo`)
+    .get<Demo[]>(`https://studyhub-backend-x13o.onrender.com/demo`)
     .then((response) => (demos.value = response.data))
     .catch((error) => console.log(error))
 }
