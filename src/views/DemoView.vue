@@ -2,14 +2,7 @@
 import { onMounted, type Ref, ref } from 'vue'
 import axios from 'axios'
 
-interface Resource {
-  id: number
-  title: string
-  type: string
-  url: string
-}
-
-const studyResources = ref<Resource[]>([
+const studyResources = ref([
   {
     id: 1,
     title: 'Einführung in Spring Boot',
@@ -31,23 +24,19 @@ const studyResources = ref<Resource[]>([
 ])
 
 type Demo = { name: string; age: number }
-
 const demos: Ref<Demo[]> = ref([])
 
-function requestDemos(): void {
+onMounted(() => {
   axios
-    .get<Demo[]>(`https://studyhub-backend-x13o.onrender.com/demo`)
+    .get<Demo[]>('https://studyhub-backend-x13o.onrender.com/demo')
     .then((response) => (demos.value = response.data))
     .catch((error) => console.log(error))
-}
-
-onMounted(() => requestDemos())
+})
 </script>
 
 <template>
-  <div class="resource-list">
+  <div class="demo-view">
     <h2>Zuletzt geteilte Lernmaterialien</h2>
-
     <ul>
       <li v-for="resource in studyResources" :key="resource.id">
         <strong>{{ resource.title }}</strong> ({{ resource.type }})
@@ -55,17 +44,18 @@ onMounted(() => requestDemos())
         <a :href="resource.url" target="_blank">Zur Ressource</a>
       </li>
     </ul>
+
+    <h2>Demo-Nutzer</h2>
     <ul>
-      <li v-for="resource in demos" :key="resource.name">
-        <strong>{{ resource.name }}</strong> ({{ resource.age }})
-        <br />
+      <li v-for="demo in demos" :key="demo.name">
+        <strong>{{ demo.name }}</strong> ({{ demo.age }})
       </li>
     </ul>
   </div>
 </template>
 
 <style scoped>
-.resource-list {
+.demo-view {
   background-color: whitesmoke;
   color: black;
   padding: 30px;
