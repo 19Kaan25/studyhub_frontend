@@ -1,5 +1,14 @@
 <script setup lang="ts">
-import { RouterView, RouterLink } from 'vue-router'
+import { RouterView, RouterLink, useRouter } from 'vue-router'
+import { useAuthStore } from './stores/auth'
+
+const auth = useAuthStore()
+const router = useRouter()
+
+function logout() {
+  auth.logout()
+  router.push('/login')
+}
 </script>
 
 <template>
@@ -10,7 +19,16 @@ import { RouterView, RouterLink } from 'vue-router'
 
     <nav>
       <RouterLink to="/">Home</RouterLink>
-      <RouterLink to="/resources">Ressource erstellen</RouterLink>
+      <RouterLink v-if="auth.isLoggedIn" to="/posts/new">Post erstellen</RouterLink>
+
+      <template v-if="auth.isLoggedIn">
+        <span class="user">Hallo, {{ auth.username }}</span>
+        <button class="logout" @click="logout">Logout</button>
+      </template>
+      <template v-else>
+        <RouterLink to="/login">Login</RouterLink>
+        <RouterLink to="/register">Registrieren</RouterLink>
+      </template>
     </nav>
   </header>
 
@@ -39,6 +57,7 @@ header {
 nav {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 24px;
   margin-top: 12px;
 }
@@ -56,5 +75,24 @@ nav a {
 nav a:hover,
 nav a.router-link-active {
   background-color: #e0e0e0;
+}
+
+.user {
+  font-size: 14px;
+  color: #555;
+}
+
+.logout {
+  padding: 6px 14px;
+  background-color: #2c3e50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.logout:hover {
+  background-color: #1a252f;
 }
 </style>

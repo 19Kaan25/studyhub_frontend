@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import { useAuthStore } from '../stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,21 +11,41 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: '/demo',
-      name: 'demo',
-      component: () => import('../views/DemoView.vue'),
+      path: '/login',
+      name: 'login',
+      component: () => import('../views/LoginView.vue'),
+      meta: { guestOnly: true },
     },
     {
-      path: '/resources',
-      name: 'resource-create',
-      component: () => import('../views/ResourceCreateView.vue'),
+      path: '/register',
+      name: 'register',
+      component: () => import('../views/RegisterView.vue'),
+      meta: { guestOnly: true },
     },
     {
-      path: '/resources/:id',
-      name: 'resource-detail',
-      component: () => import('../views/ResourceDetailView.vue'),
+      path: '/posts/new',
+      name: 'post-create',
+      component: () => import('../views/PostCreateView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/posts/:id',
+      name: 'post-detail',
+      component: () => import('../views/PostDetailView.vue'),
     },
   ],
+})
+
+// Router-Guard: geschützte Routen nur eingeloggt, Login/Register nur ausgeloggt.
+router.beforeEach((to) => {
+  const auth = useAuthStore()
+
+  if (to.meta.requiresAuth && !auth.isLoggedIn) {
+    return { name: 'login' }
+  }
+  if (to.meta.guestOnly && auth.isLoggedIn) {
+    return { name: 'home' }
+  }
 })
 
 export default router
