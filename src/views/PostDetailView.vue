@@ -73,7 +73,7 @@ async function remove() {
 </script>
 
 <template>
-  <div class="detail-view">
+  <div class="detail card">
     <div v-if="post">
       <!-- Anzeige-Modus -->
       <template v-if="!editing">
@@ -98,8 +98,8 @@ async function remove() {
         </div>
 
         <div v-if="isOwner" class="actions">
-          <button class="edit" @click="startEdit">Bearbeiten</button>
-          <button class="delete" @click="remove">Löschen</button>
+          <button class="btn btn-primary" @click="startEdit">Bearbeiten</button>
+          <button class="btn btn-danger" @click="remove">Löschen</button>
         </div>
       </template>
 
@@ -109,179 +109,90 @@ async function remove() {
         <form @submit.prevent="saveEdit">
           <div class="field">
             <label>Titel</label>
-            <input v-model="edit.title" type="text" required />
+            <input class="input" v-model="edit.title" type="text" required />
           </div>
           <div class="field">
             <label>Typ</label>
-            <select v-model="edit.type">
+            <select class="input" v-model="edit.type">
               <option value="DOCUMENT">Dokument</option>
               <option value="LINK">Link</option>
             </select>
           </div>
           <div class="field">
             <label>Inhalt</label>
-            <textarea v-model="edit.content" rows="4"></textarea>
+            <textarea class="input" v-model="edit.content" rows="4"></textarea>
           </div>
           <div class="field">
             <label>URL</label>
-            <input v-model="edit.url" type="text" />
+            <input class="input" v-model="edit.url" type="text" />
           </div>
           <div class="actions">
-            <button class="edit" type="submit" :disabled="saving">
+            <button class="btn btn-primary" type="submit" :disabled="saving">
               {{ saving ? 'Speichert…' : 'Speichern' }}
             </button>
-            <button class="cancel" type="button" @click="editing = false">Abbrechen</button>
+            <button class="btn btn-ghost" type="button" @click="editing = false">Abbrechen</button>
           </div>
         </form>
       </template>
 
+      <p v-if="errorMessage" class="error msg">{{ errorMessage }}</p>
       <RouterLink to="/" class="back">← Zurück zum Feed</RouterLink>
     </div>
 
     <p v-else-if="errorMessage" class="error">{{ errorMessage }}</p>
-    <p v-else>Lade…</p>
-
-    <p v-if="errorMessage && post" class="error">{{ errorMessage }}</p>
+    <p v-else class="loading">Lade…</p>
   </div>
 </template>
 
 <style scoped>
-.detail-view {
-  background-color: whitesmoke;
-  color: black;
-  padding: 30px;
-  border-radius: 8px;
+.detail {
   max-width: 600px;
-  margin: 0 auto;
-  font-family: sans-serif;
+  margin: 2rem auto;
 }
-
 .post-head {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
-
-.badge {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 10px;
-  text-transform: uppercase;
-}
-
-.badge-doc {
-  background-color: #e0e7ff;
-  color: #3730a3;
-}
-
-.badge-link {
-  background-color: #dcfce7;
-  color: #166534;
-}
-
 .content {
-  color: #333;
-  margin-bottom: 14px;
+  color: var(--text);
+  margin-bottom: 1rem;
   white-space: pre-wrap;
 }
-
 .preview {
-  margin-top: 16px;
-  padding: 14px;
-  border: 1px solid #ddd;
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--bg);
 }
-
 .preview img {
   max-width: 100%;
   border-radius: 6px;
-  margin-bottom: 8px;
+  margin-bottom: 0.5rem;
 }
-
 .preview-title {
-  font-weight: bold;
+  font-weight: 700;
 }
-
 .preview-desc {
-  color: #555;
-  font-size: 14px;
+  color: var(--muted);
+  font-size: 0.9rem;
 }
-
-.field {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 14px;
-}
-
-.field label {
-  font-weight: bold;
-  margin-bottom: 6px;
-}
-
-.field input,
-.field select,
-.field textarea {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-  font-family: inherit;
-}
-
 .actions {
   display: flex;
-  gap: 10px;
-  margin-top: 16px;
+  gap: 0.6rem;
+  margin-top: 1.2rem;
 }
-
-.actions button {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  color: white;
+.msg {
+  margin-top: 1rem;
 }
-
-.edit {
-  background-color: #2c3e50;
-}
-
-.edit:hover:not(:disabled) {
-  background-color: #1a252f;
-}
-
-.delete {
-  background-color: #c0392b;
-}
-
-.delete:hover {
-  background-color: #a33125;
-}
-
-.cancel {
-  background-color: #888;
-}
-
-.cancel:hover {
-  background-color: #6f6f6f;
-}
-
 .back {
-  display: block;
-  margin-top: 20px;
-  color: #2c3e50;
-  text-decoration: none;
+  display: inline-block;
+  margin-top: 1.2rem;
+  font-weight: 500;
 }
-
-.back:hover {
-  text-decoration: underline;
-}
-
-.error {
-  color: red;
+.loading {
+  color: var(--muted);
 }
 </style>

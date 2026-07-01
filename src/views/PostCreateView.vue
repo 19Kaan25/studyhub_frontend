@@ -30,18 +30,24 @@ async function createPost() {
 </script>
 
 <template>
-  <div class="create-view">
+  <div class="create card">
     <h2>Neuen Post erstellen</h2>
 
     <form @submit.prevent="createPost">
       <div class="field">
         <label>Titel</label>
-        <input v-model="form.title" type="text" required placeholder="z.B. Spring Boot Tutorial" />
+        <input
+          class="input"
+          v-model="form.title"
+          type="text"
+          required
+          placeholder="z.B. Spring Boot Tutorial"
+        />
       </div>
 
       <div class="field">
         <label>Typ</label>
-        <select v-model="form.type">
+        <select class="input" v-model="form.type">
           <option value="DOCUMENT">Dokument</option>
           <option value="LINK">Link</option>
         </select>
@@ -49,81 +55,37 @@ async function createPost() {
 
       <div class="field">
         <label>Inhalt</label>
-        <textarea v-model="form.content" rows="4" placeholder="Beschreibung / Inhalt"></textarea>
+        <textarea
+          class="input"
+          v-model="form.content"
+          rows="4"
+          placeholder="Beschreibung / Inhalt"
+        ></textarea>
       </div>
 
       <div class="field">
         <label>URL</label>
-        <input v-model="form.url" type="text" placeholder="https://..." />
+        <input class="input" v-model="form.url" type="text" placeholder="https://..." />
       </div>
 
-      <button type="submit" :disabled="submitting">
+      <button class="btn btn-primary btn-full" type="submit" :disabled="submitting">
         {{ submitting ? 'Wird erstellt…' : 'Erstellen' }}
       </button>
     </form>
 
-    <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+    <p v-if="errorMessage" class="error msg">{{ errorMessage }}</p>
   </div>
 </template>
 
 <style scoped>
-.create-view {
-  background-color: whitesmoke;
-  color: black;
-  padding: 30px;
-  border-radius: 8px;
+.create {
   max-width: 500px;
-  margin: 0 auto;
-  font-family: sans-serif;
+  margin: 2rem auto;
 }
-
 h2 {
-  margin-bottom: 24px;
+  margin-bottom: 1.5rem;
 }
-
-.field {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 16px;
-}
-
-.field label {
-  font-weight: bold;
-  margin-bottom: 6px;
-}
-
-.field input,
-.field select,
-.field textarea {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-  font-family: inherit;
-}
-
-button {
-  margin-top: 8px;
-  padding: 10px 20px;
-  background-color: #2c3e50;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 15px;
-  cursor: pointer;
-}
-
-button:hover:not(:disabled) {
-  background-color: #1a252f;
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.error {
-  color: red;
-  margin-top: 16px;
+.msg {
+  margin-top: 1rem;
 }
 </style>

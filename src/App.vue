@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterView, RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from './stores/auth'
+import logoUrl from './components/icons/logo_noB.png'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -12,18 +13,19 @@ function logout() {
 </script>
 
 <template>
-  <header>
-    <RouterLink to="/" class="title-link">
-      <h1>StudyHub - HTW Berlin</h1>
+  <header class="navbar">
+    <RouterLink to="/" class="brand">
+      <img :src="logoUrl" alt="StudyHub Logo" class="logo" />
+      <span class="brand-name">StudyHub</span>
     </RouterLink>
 
-    <nav>
+    <nav class="nav-links">
       <RouterLink to="/">Home</RouterLink>
       <RouterLink v-if="auth.isLoggedIn" to="/posts/new">Post erstellen</RouterLink>
 
       <template v-if="auth.isLoggedIn">
         <span class="user">Hallo, {{ auth.username }}</span>
-        <button class="logout" @click="logout">Logout</button>
+        <button class="btn btn-primary" @click="logout">Logout</button>
       </template>
       <template v-else>
         <RouterLink to="/login">Login</RouterLink>
@@ -38,61 +40,66 @@ function logout() {
 </template>
 
 <style scoped>
-header {
-  text-align: center;
-  margin-bottom: 2rem;
-  margin-top: 2rem;
-  font-family: sans-serif;
-}
-
-.title-link {
-  text-decoration: none;
-  color: inherit;
-}
-
-.title-link:hover h1 {
-  opacity: 0.8;
-}
-
-nav {
+.navbar {
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 24px;
-  margin-top: 12px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--primary-tint);
+  margin-bottom: 2rem;
 }
 
-nav a {
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.brand:hover {
   text-decoration: none;
-  color: #2c3e50;
-  font-size: 15px;
+}
+.logo {
+  height: 48px;
+  width: auto;
+}
+.brand-name {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}
+.nav-links a {
+  color: var(--text);
   font-weight: 500;
-  padding: 6px 14px;
-  border-radius: 6px;
-  transition: background-color 0.2s;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
 }
-
-nav a:hover,
-nav a.router-link-active {
-  background-color: #e0e0e0;
+.nav-links a:hover,
+.nav-links a.router-link-active {
+  background: var(--primary-tint);
+  color: var(--primary);
+  text-decoration: none;
 }
-
 .user {
-  font-size: 14px;
-  color: #555;
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
-.logout {
-  padding: 6px 14px;
-  background-color: #2c3e50;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.logout:hover {
-  background-color: #1a252f;
+/* Responsive: auf schmalen Bildschirmen alles zentriert untereinander */
+@media (max-width: 600px) {
+  .navbar {
+    justify-content: center;
+    text-align: center;
+  }
+  .nav-links {
+    justify-content: center;
+  }
 }
 </style>

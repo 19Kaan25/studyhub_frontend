@@ -4,19 +4,12 @@ name: Frontend Tests (CI)
 on:
   push:
     branches: [ "main" ]
-    paths:
-      - 'studyhub_frontend/**' # Führt die Tests nur aus, wenn sich im Frontend was ändert
   pull_request:
     branches: [ "main" ]
 
 jobs:
   test-frontend:
     runs-on: ubuntu-latest
-
-    # Wir wechseln für alle Befehle in den Frontend-Ordner
-    defaults:
-      run:
-        working-directory: ./studyhub_frontend
 
     steps:
       - name: Checkout Code aus dem Repository
@@ -27,7 +20,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: ./studyhub_frontend/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Dependencies installieren
         run: npm ci

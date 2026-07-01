@@ -26,25 +26,25 @@ async function submit() {
 </script>
 
 <template>
-  <div class="auth-view">
+  <div class="auth card">
     <h2>Einloggen</h2>
 
     <form @submit.prevent="submit">
       <div class="field">
         <label>E-Mail</label>
-        <input v-model="email" type="email" required placeholder="du@beispiel.de" />
+        <input class="input" v-model="email" type="email" required placeholder="du@beispiel.de" />
       </div>
       <div class="field">
         <label>Passwort</label>
-        <input v-model="password" type="password" required placeholder="••••••••" />
+        <input class="input" v-model="password" type="password" required placeholder="••••••••" />
       </div>
 
-      <button type="submit" :disabled="submitting">
+      <button class="btn btn-primary btn-full" type="submit" :disabled="submitting">
         {{ submitting ? 'Wird geprüft…' : 'Einloggen' }}
       </button>
     </form>
 
-    <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+    <p v-if="errorMessage" class="error msg">{{ errorMessage }}</p>
 
     <p class="switch">
       Noch kein Konto? <RouterLink to="/register">Jetzt registrieren</RouterLink>
@@ -53,70 +53,21 @@ async function submit() {
 </template>
 
 <style scoped>
-.auth-view {
-  background-color: whitesmoke;
-  color: black;
-  padding: 30px;
-  border-radius: 8px;
+.auth {
   max-width: 400px;
-  margin: 0 auto;
-  font-family: sans-serif;
+  margin: 2rem auto;
 }
-
 h2 {
-  margin-bottom: 24px;
+  margin-bottom: 1.5rem;
+  text-align: center;
 }
-
-.field {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 16px;
+.msg {
+  margin-top: 1rem;
 }
-
-.field label {
-  font-weight: bold;
-  margin-bottom: 6px;
-}
-
-.field input {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-}
-
-button {
-  margin-top: 8px;
-  width: 100%;
-  padding: 10px 20px;
-  background-color: #2c3e50;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 15px;
-  cursor: pointer;
-}
-
-button:hover:not(:disabled) {
-  background-color: #1a252f;
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.error {
-  color: red;
-  margin-top: 16px;
-}
-
 .switch {
-  margin-top: 20px;
-  font-size: 14px;
-}
-
-.switch a {
-  color: #2c3e50;
+  margin-top: 1.2rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--muted);
 }
 </style>

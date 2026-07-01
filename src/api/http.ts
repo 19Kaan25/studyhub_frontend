@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-// Zentrale Backend-Basis-URL. Überschreibbar per Vite-Env (VITE_API_BASE_URL, also localhost:8080),
+// Zentrale Backend-Basis-URL. Überschreibbar per Vite-Env (VITE_API_BASE_URL),
 // Fallback ist das deployte Render-Backend.
 const API_BASE_URL =
   (import.meta.env.VITE_API_BASE_URL as string | undefined) ??
