@@ -92,7 +92,14 @@ async function remove() {
         </p>
 
         <div v-if="post.previewImageUrl || post.previewTitle" class="preview">
-          <img v-if="post.previewImageUrl" :src="post.previewImageUrl" alt="Vorschaubild" />
+          <a
+            v-if="post.previewImageUrl"
+            :href="post.url || undefined"
+            target="_blank"
+            rel="noopener"
+          >
+            <img :src="post.previewImageUrl" alt="Vorschaubild" />
+          </a>
           <p v-if="post.previewTitle" class="preview-title">{{ post.previewTitle }}</p>
           <p v-if="post.previewDescription" class="preview-desc">{{ post.previewDescription }}</p>
         </div>

@@ -32,6 +32,15 @@ onMounted(async () => {
           </span>
         </div>
         <p v-if="post.content" class="post-content">{{ post.content }}</p>
+        <a
+          v-if="post.previewImageUrl"
+          :href="post.url || undefined"
+          target="_blank"
+          rel="noopener"
+          class="feed-preview-link"
+        >
+          <img :src="post.previewImageUrl" alt="Vorschaubild" class="feed-preview" />
+        </a>
         <a v-if="post.url" :href="post.url" target="_blank" rel="noopener" class="post-link">
           Zur Ressource ↗
         </a>
@@ -79,7 +88,19 @@ h2 {
   color: var(--muted);
   margin-bottom: 0.8rem;
 }
+.feed-preview-link {
+  display: block;
+  margin-bottom: 0.8rem;
+}
+.feed-preview {
+  display: block;
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
 .post-link {
+  display: inline-block;
   font-weight: 600;
 }
 .empty {
