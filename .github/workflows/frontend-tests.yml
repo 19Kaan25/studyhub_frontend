@@ -1,0 +1,37 @@
+name: Frontend Tests (CI)
+
+# Wann soll diese Action ausgeführt werden?
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'studyhub_frontend/**' # Führt die Tests nur aus, wenn sich im Frontend was ändert
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test-frontend:
+    runs-on: ubuntu-latest
+
+    # Wir wechseln für alle Befehle in den Frontend-Ordner
+    defaults:
+      run:
+        working-directory: ./studyhub_frontend
+
+    steps:
+      - name: Checkout Code aus dem Repository
+        uses: actions/checkout@v4
+
+      - name: Node.js (Version 20) aufsetzen
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: ./studyhub_frontend/package-lock.json
+
+      - name: Dependencies installieren
+        run: npm ci
+
+      - name: Vitest Tests ausführen
+        # Führt den Test-Befehl aus und bricht bei Fehlern ab
+        run: npm run test -- --run

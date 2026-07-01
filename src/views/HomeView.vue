@@ -41,7 +41,7 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.home-view {
+/*.home-view {
   background-color: whitesmoke;
   color: black;
   padding: 30px;
@@ -115,4 +115,123 @@ a {
 .error {
   color: red;
 }
-</style>
+*/
+
+/* --- Layout --- */
+.home-view {
+  max-width: 800px; /* Etwas breiter für das Card-Layout */
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* --- Listen-Design --- */
+ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* Abstand zwischen den Posts */
+}
+
+/* Aus jedem <li> wird eine schicke Karte */
+li {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f1f5f9;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+li:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Card Header --- */
+.post-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.post-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  text-decoration: none;
+  line-height: 1.3;
+}
+
+.post-title:hover {
+  color: #2563eb;
+}
+
+/* --- Badges --- */
+.badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.badge-doc {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.badge-link {
+  background-color: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+/* --- Content --- */
+.content {
+  color: #475569;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+/* --- Der "Zur Ressource" Link am Ende der Karte --- */
+li > a {
+  display: inline-block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #2563eb;
+  text-decoration: none;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 1rem;
+  width: 100%; /* Trennstrich über die volle Breite */
+  transition: color 0.2s ease;
+}
+
+li > a:hover {
+  color: #1d4ed8;
+}
+
+/* --- Fehlermeldung --- */
+.error {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 500;
+}
+</style> */
