@@ -20,7 +20,10 @@ async function submit() {
     await auth.register(username.value, email.value, password.value)
     await router.push('/')
   } catch (err) {
-    if (axios.isAxiosError(err) && err.response?.status === 409) {
+    if (axios.isAxiosError(err) && !err.response) {
+      // Keine Response = Server gar nicht erreicht (z.B. Backend aus / kein Netz)
+      errorMessage.value = 'Server nicht erreichbar. Läuft das Backend?'
+    } else if (axios.isAxiosError(err) && err.response?.status === 409) {
       errorMessage.value = 'E-Mail oder Username ist bereits vergeben.'
     } else {
       errorMessage.value = 'Registrierung fehlgeschlagen. Bitte Eingaben prüfen.'

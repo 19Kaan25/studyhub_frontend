@@ -6,20 +6,24 @@ import type { Post } from '../types/post'
 
 const posts = ref<Post[]>([])
 const errorMessage = ref('')
+const loading = ref(true)
 
 onMounted(async () => {
   try {
-    const response = await http.get<Post[]>('/api/posts')
-    posts.value = response.data.slice().reverse()
+    // /api/posts/mine liefert nur die Posts des eingeloggten Users (neueste zuerst).
+    const response = await http.get<Post[]>('/api/posts/mine')
+    posts.value = response.data
   } catch {
-    errorMessage.value = 'Posts konnten nicht geladen werden.'
+    errorMessage.value = 'Deine Posts konnten nicht geladen werden.'
+  } finally {
+    loading.value = false
   }
 })
 </script>
 
 <template>
-  <div class="feed">
-    <h2 class="feed-title">Zuletzt erstellte Posts</h2>
+  <div class="my-posts">
+    <h2 class="feed-title">Meine Posts</h2>
 
     <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
 
@@ -56,7 +60,10 @@ onMounted(async () => {
       </li>
     </ul>
 
-    <p v-else-if="!errorMessage" class="empty">Noch keine Posts vorhanden.</p>
+    <div v-else-if="!loading && !errorMessage" class="empty">
+      <p>Du hast noch keine Posts erstellt.</p>
+      <RouterLink to="/posts/new" class="btn btn-primary">Ersten Post erstellen</RouterLink>
+    </div>
   </div>
 </template>
 
@@ -86,8 +93,6 @@ onMounted(async () => {
   flex-direction: column;
   gap: 1.5rem;
 }
-
-/* Karte: Bild links, Text rechts */
 .post {
   position: relative;
   display: flex;
@@ -102,7 +107,6 @@ onMounted(async () => {
   transform: translateY(-2px);
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
 }
-
 .post-thumb {
   flex: none;
   width: 220px;
@@ -115,11 +119,10 @@ onMounted(async () => {
   border-radius: 10px;
   display: block;
 }
-
 .post-body {
   flex: 1;
   min-width: 0;
-  padding-right: 3.5rem; /* Platz für das Badge oben rechts */
+  padding-right: 3.5rem;
 }
 .post-title {
   font-size: 1.25rem;
@@ -134,22 +137,23 @@ onMounted(async () => {
 .post-link {
   display: inline-block;
   font-weight: 600;
+  margin-right: 1rem;
 }
-
-/* Badge oben rechts in der Ecke */
 .post .badge {
   position: absolute;
   top: 1.1rem;
   right: 1.1rem;
 }
-
 .empty {
   text-align: center;
   color: var(--muted);
   margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 
-/* Mobil: Bild oben, Text darunter */
 @media (max-width: 600px) {
   .post {
     flex-direction: column;

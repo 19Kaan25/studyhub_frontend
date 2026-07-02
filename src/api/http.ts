@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // Zentrale Backend-Basis-URL. Überschreibbar per Vite-Env (VITE_API_BASE_URL),
 // Fallback ist das deployte Render-Backend.
-const API_BASE_URL =
+export const API_BASE_URL =
   (import.meta.env.VITE_API_BASE_URL as string | undefined) ??
   'https://studyhub-backend-x13o.onrender.com'
 

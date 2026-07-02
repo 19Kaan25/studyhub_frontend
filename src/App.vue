@@ -19,19 +19,92 @@ function logout() {
       <span class="brand-name">StudyHub</span>
     </RouterLink>
 
-    <nav class="nav-links">
-      <RouterLink to="/">Home</RouterLink>
-      <RouterLink v-if="auth.isLoggedIn" to="/posts/new">Post erstellen</RouterLink>
+    <nav class="nav-pills">
+      <RouterLink to="/" class="nav-pill">
+        <svg
+          class="ic"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M3 11l9-8 9 8" />
+          <path d="M5 10v10h5v-6h4v6h5V10" />
+        </svg>
+        Home
+      </RouterLink>
+      <RouterLink v-if="auth.isLoggedIn" to="/posts/new" class="nav-pill">
+        <svg
+          class="ic"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M12 20h9" />
+          <path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4 12.5-12.5z" />
+        </svg>
+        Post erstellen
+      </RouterLink>
+      <RouterLink v-if="auth.isLoggedIn" to="/my-posts" class="nav-pill">
+        <svg
+          class="ic"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M4 6h16M4 12h16M4 18h10" />
+        </svg>
+        Meine Posts
+      </RouterLink>
+    </nav>
 
+    <div class="nav-right">
       <template v-if="auth.isLoggedIn">
-        <span class="user">Hallo, {{ auth.username }}</span>
-        <button class="btn btn-primary" @click="logout">Logout</button>
+        <span class="user-name">
+          <svg
+            class="ic"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 21v-1a6 6 0 016-6h4a6 6 0 016 6v1" />
+          </svg>
+          Hallo, {{ auth.username }}
+        </span>
+        <button class="logout-btn" @click="logout">
+          <svg
+            class="ic"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+            <path d="M16 17l5-5-5-5" />
+            <path d="M21 12H9" />
+          </svg>
+          Logout
+        </button>
       </template>
       <template v-else>
-        <RouterLink to="/login">Login</RouterLink>
-        <RouterLink to="/register">Registrieren</RouterLink>
+        <RouterLink to="/login" class="nav-pill light">Login</RouterLink>
+        <RouterLink to="/register" class="nav-pill light">Registrieren</RouterLink>
       </template>
-    </nav>
+    </div>
   </header>
 
   <main>
@@ -45,60 +118,107 @@ function logout() {
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid var(--primary-tint);
-  margin-bottom: 2rem;
+  gap: 0.75rem;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  padding: 0.6rem 1rem;
+  border-radius: 16px;
+  margin-bottom: 2.5rem;
+  box-shadow: var(--shadow);
 }
 
+/* Marke links */
 .brand {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.5rem;
 }
 .brand:hover {
   text-decoration: none;
 }
 .logo {
-  height: 48px;
+  height: 34px;
   width: auto;
+  /* dunkles Logo auf dunkler Navbar -> per Filter weiß färben */
+  filter: brightness(0) invert(1);
 }
 .brand-name {
-  font-size: 1.4rem;
+  color: #fff;
+  font-size: 1.25rem;
   font-weight: 800;
-  color: var(--primary);
 }
 
-.nav-links {
+/* Segmentierte Navigation (Mitte) */
+.nav-pills {
+  display: flex;
+  gap: 0.2rem;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 0.2rem;
+  border-radius: 11px;
+}
+.nav-pill {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 0.5rem 1rem;
-}
-.nav-links a {
-  color: var(--text);
-  font-weight: 500;
-  padding: 0.4rem 0.8rem;
+  gap: 0.35rem;
+  padding: 0.42rem 0.7rem;
   border-radius: 8px;
+  color: #fff;
+  font-weight: 500;
+  font-size: 0.88rem;
+  white-space: nowrap;
 }
-.nav-links a:hover,
-.nav-links a.router-link-active {
-  background: var(--primary-tint);
-  color: var(--primary);
+.nav-pill:hover {
+  background: rgba(255, 255, 255, 0.14);
   text-decoration: none;
 }
-.user {
-  color: var(--muted);
-  font-size: 0.9rem;
+.nav-pill.router-link-exact-active {
+  background: #fff;
+  color: var(--primary);
+}
+.nav-pill.light {
+  background: rgba(255, 255, 255, 0.12);
 }
 
-/* Responsive: auf schmalen Bildschirmen alles zentriert untereinander */
-@media (max-width: 600px) {
+/* Nutzerbereich rechts */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.user-name {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.88rem;
+  white-space: nowrap;
+}
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.42rem 0.8rem;
+  border-radius: 9px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.logout-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.ic {
+  width: 17px;
+  height: 17px;
+}
+
+/* Nur auf schmalen Bildschirmen alles zentriert stapeln */
+@media (max-width: 720px) {
   .navbar {
-    justify-content: center;
-    text-align: center;
-  }
-  .nav-links {
     justify-content: center;
   }
 }

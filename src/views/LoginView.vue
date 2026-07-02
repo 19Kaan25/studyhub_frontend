@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
+import axios from 'axios'
 import { useAuthStore } from '../stores/auth'
 
 const router = useRouter()
@@ -17,8 +18,13 @@ async function submit() {
   try {
     await auth.login(email.value, password.value)
     await router.push('/')
-  } catch {
-    errorMessage.value = 'Login fehlgeschlagen. E-Mail oder Passwort falsch.'
+  } catch (err) {
+    if (axios.isAxiosError(err) && !err.response) {
+      // Kein Response = Server gar nicht erreicht (z.B. Backend aus / kein Netz)
+      errorMessage.value = 'Server nicht erreichbar. Läuft das Backend?'
+    } else {
+      errorMessage.value = 'Login fehlgeschlagen. E-Mail oder Passwort falsch.'
+    }
   } finally {
     submitting.value = false
   }

@@ -9,6 +9,7 @@ export interface Post {
   previewTitle?: string
   previewDescription?: string
   previewImageUrl?: string
+  fileName?: string
   userId?: number
   createdAt?: string
   updatedAt?: string

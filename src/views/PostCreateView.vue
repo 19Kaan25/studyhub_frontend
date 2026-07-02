@@ -31,6 +31,33 @@ const errorMessage = ref('')
 const submitting = ref(false)
 let debounceTimer: ReturnType<typeof setTimeout> | undefined
 
+// --- Datei-Upload (nur bei Typ "Dokument") ---
+const selectedFile = ref<File | null>(null)
+const fileError = ref('')
+const ERLAUBTE_TYPEN = ['application/pdf', 'image/png', 'image/jpeg']
+const MAX_GROESSE = 5 * 1024 * 1024 // 5 MB
+
+function onFileChange(event: Event) {
+  fileError.value = ''
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0] ?? null
+  if (file) {
+    if (!ERLAUBTE_TYPEN.includes(file.type)) {
+      fileError.value = 'Nur PDF, PNG oder JPG erlaubt.'
+      selectedFile.value = null
+      input.value = ''
+      return
+    }
+    if (file.size > MAX_GROESSE) {
+      fileError.value = 'Datei zu groß (max. 5 MB).'
+      selectedFile.value = null
+      input.value = ''
+      return
+    }
+  }
+  selectedFile.value = file
+}
+
 const hasPreview = computed(
   () => !!(form.value.previewTitle || form.value.previewDescription || form.value.previewImageUrl),
 )
@@ -42,8 +69,12 @@ watch(
     clearPreview()
     if (debounceTimer) clearTimeout(debounceTimer)
 
-    // Vorschau nur bei Typ "Link" und wenn eine URL da ist
-    if (form.value.type !== 'LINK' || !form.value.url.trim()) return
+    // Bei "Dokument" gibt es kein URL-Feld -> eine evtl. getippte URL verwerfen
+    if (form.value.type !== 'LINK') {
+      form.value.url = ''
+      return
+    }
+    if (!form.value.url.trim()) return
 
     previewLoading.value = true
     debounceTimer = setTimeout(fetchPreview, 600)
@@ -82,7 +113,16 @@ async function createPost() {
   submitting.value = true
   try {
     const response = await http.post<Post>('/api/posts', form.value)
-    await router.push(`/posts/${response.data.id}`)
+    const postId = response.data.id
+
+    // Bei Typ "Dokument" + gewählter Datei: Datei als multipart hochladen
+    if (form.value.type === 'DOCUMENT' && selectedFile.value) {
+      const formData = new FormData()
+      formData.append('file', selectedFile.value)
+      await http.post(`/api/posts/${postId}/file`, formData)
+    }
+
+    await router.push(`/posts/${postId}`)
   } catch {
     errorMessage.value = 'Fehler beim Erstellen des Posts.'
   } finally {
@@ -125,7 +165,14 @@ async function createPost() {
         ></textarea>
       </div>
 
-      <div class="field">
+      <!-- Datei-Upload (nur bei Typ "Dokument") -->
+      <div v-if="form.type === 'DOCUMENT'" class="field">
+        <label>Dokument (PDF, PNG, JPG – max. 5 MB, optional)</label>
+        <input class="input" type="file" accept=".pdf,.png,.jpg,.jpeg" @change="onFileChange" />
+        <p v-if="fileError" class="file-error">{{ fileError }}</p>
+      </div>
+
+      <div v-if="form.type === 'LINK'" class="field">
         <label>URL</label>
         <input class="input" v-model="form.url" type="text" placeholder="https://..." />
       </div>
@@ -161,6 +208,11 @@ h2 {
 }
 .msg {
   margin-top: 1rem;
+}
+.file-error {
+  color: var(--danger);
+  font-size: 0.85rem;
+  margin-top: 0.4rem;
 }
 
 /* --- Link-Vorschau --- */

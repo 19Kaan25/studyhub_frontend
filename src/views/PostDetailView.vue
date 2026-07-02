@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
-import http from '../api/http'
+import http, { API_BASE_URL } from '../api/http'
 import { useAuthStore } from '../stores/auth'
 import type { Post, PostType } from '../types/post'
 
@@ -14,15 +14,39 @@ const errorMessage = ref('')
 const editing = ref(false)
 const saving = ref(false)
 
-const edit = ref<{ title: string; content: string; url: string; type: PostType }>({
+const edit = ref<{
+  title: string
+  content: string
+  url: string
+  type: PostType
+  previewTitle: string
+  previewDescription: string
+  previewImageUrl: string
+}>({
   title: '',
   content: '',
   url: '',
   type: 'DOCUMENT',
+  previewTitle: '',
+  previewDescription: '',
+  previewImageUrl: '',
 })
+
+const previewLoading = ref(false)
+let debounceTimer: ReturnType<typeof setTimeout> | undefined
+
+const hasEditPreview = computed(
+  () => !!(edit.value.previewTitle || edit.value.previewDescription || edit.value.previewImageUrl),
+)
 
 const isOwner = computed(
   () => post.value !== null && auth.userId !== null && post.value.userId === auth.userId,
+)
+
+// Download-Link zur angehängten Datei (öffentlich abrufbar). Content-Disposition
+// im Backend sorgt dafür, dass die Datei heruntergeladen statt geöffnet wird.
+const downloadUrl = computed(() =>
+  post.value ? `${API_BASE_URL}/api/posts/${post.value.id}/file` : '',
 )
 
 onMounted(async () => {
@@ -41,8 +65,50 @@ function startEdit() {
     content: post.value.content ?? '',
     url: post.value.url ?? '',
     type: post.value.type,
+    // Vorschau-Felder mit übernehmen, damit sie beim Speichern erhalten bleiben.
+    previewTitle: post.value.previewTitle ?? '',
+    previewDescription: post.value.previewDescription ?? '',
+    previewImageUrl: post.value.previewImageUrl ?? '',
   }
   editing.value = true
+}
+
+// Wird nur bei echter Nutzereingabe aufgerufen (nicht beim Befüllen in startEdit),
+// damit eine vorhandene Vorschau nicht ungewollt verschwindet.
+function onPreviewInput() {
+  if (debounceTimer) clearTimeout(debounceTimer)
+  clearEditPreview()
+  // Bei "Dokument" gibt es kein URL-Feld -> eine evtl. vorhandene URL verwerfen
+  if (edit.value.type !== 'LINK') {
+    edit.value.url = ''
+    return
+  }
+  if (!edit.value.url.trim()) return
+  previewLoading.value = true
+  debounceTimer = setTimeout(fetchEditPreview, 600)
+}
+
+function clearEditPreview() {
+  edit.value.previewTitle = ''
+  edit.value.previewDescription = ''
+  edit.value.previewImageUrl = ''
+  previewLoading.value = false
+}
+
+async function fetchEditPreview() {
+  try {
+    const response = await http.get('/api/link-preview', { params: { url: edit.value.url } })
+    const data = response.data
+    if (data && (data.title || data.description || data.imageUrl)) {
+      edit.value.previewTitle = data.title ?? ''
+      edit.value.previewDescription = data.description ?? ''
+      edit.value.previewImageUrl = data.imageUrl ?? ''
+    }
+  } catch {
+    // Vorschau bleibt leer
+  } finally {
+    previewLoading.value = false
+  }
 }
 
 async function saveEdit() {
@@ -104,6 +170,10 @@ async function remove() {
           <p v-if="post.previewDescription" class="preview-desc">{{ post.previewDescription }}</p>
         </div>
 
+        <p v-if="post.fileName" class="file-download">
+          <a :href="downloadUrl" class="btn btn-primary"> 📄 {{ post.fileName }} herunterladen </a>
+        </p>
+
         <div v-if="isOwner" class="actions">
           <button class="btn btn-primary" @click="startEdit">Bearbeiten</button>
           <button class="btn btn-danger" @click="remove">Löschen</button>
@@ -120,7 +190,7 @@ async function remove() {
           </div>
           <div class="field">
             <label>Typ</label>
-            <select class="input" v-model="edit.type">
+            <select class="input" v-model="edit.type" @change="onPreviewInput">
               <option value="DOCUMENT">Dokument</option>
               <option value="LINK">Link</option>
             </select>
@@ -129,10 +199,23 @@ async function remove() {
             <label>Inhalt</label>
             <textarea class="input" v-model="edit.content" rows="4"></textarea>
           </div>
-          <div class="field">
+          <div v-if="edit.type === 'LINK'" class="field">
             <label>URL</label>
-            <input class="input" v-model="edit.url" type="text" />
+            <input class="input" v-model="edit.url" type="text" @input="onPreviewInput" />
           </div>
+
+          <!-- Link-Vorschau (nur bei Typ "Link") -->
+          <div v-if="edit.type === 'LINK'" class="preview">
+            <p v-if="previewLoading" class="preview-loading">Vorschau wird geladen…</p>
+            <template v-else-if="hasEditPreview">
+              <img v-if="edit.previewImageUrl" :src="edit.previewImageUrl" alt="Vorschaubild" />
+              <p v-if="edit.previewTitle" class="preview-title">{{ edit.previewTitle }}</p>
+              <p v-if="edit.previewDescription" class="preview-desc">
+                {{ edit.previewDescription }}
+              </p>
+            </template>
+          </div>
+
           <div class="actions">
             <button class="btn btn-primary" type="submit" :disabled="saving">
               {{ saving ? 'Speichert…' : 'Speichern' }}
@@ -185,6 +268,13 @@ async function remove() {
 .preview-desc {
   color: var(--muted);
   font-size: 0.9rem;
+}
+.preview-loading {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.file-download {
+  margin-top: 1rem;
 }
 .actions {
   display: flex;
