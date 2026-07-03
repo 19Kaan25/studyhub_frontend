@@ -22,7 +22,7 @@ async function submit() {
   } catch (err) {
     if (axios.isAxiosError(err) && !err.response) {
       // Keine Response = Server gar nicht erreicht (z.B. Backend aus / kein Netz)
-      errorMessage.value = 'Server nicht erreichbar. Läuft das Backend?'
+      errorMessage.value = 'Verbindung zum Server fehlgeschlagen. Bitte versuche es später erneut.'
     } else if (axios.isAxiosError(err) && err.response?.status === 409) {
       errorMessage.value = 'E-Mail oder Username ist bereits vergeben.'
     } else {
@@ -47,7 +47,7 @@ async function submit() {
           type="text"
           required
           minlength="3"
-          placeholder="z.B. kaan"
+          placeholder="z.B. Max"
         />
       </div>
       <div class="field">

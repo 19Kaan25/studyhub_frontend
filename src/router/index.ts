@@ -35,6 +35,12 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/favorites',
+      name: 'favorites',
+      component: () => import('../views/FavoritesView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/posts/:id',
       name: 'post-detail',
       component: () => import('../views/PostDetailView.vue'),

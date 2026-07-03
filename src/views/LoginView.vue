@@ -21,7 +21,7 @@ async function submit() {
   } catch (err) {
     if (axios.isAxiosError(err) && !err.response) {
       // Kein Response = Server gar nicht erreicht (z.B. Backend aus / kein Netz)
-      errorMessage.value = 'Server nicht erreichbar. Läuft das Backend?'
+      errorMessage.value = 'Verbindung zum Server fehlgeschlagen. Bitte versuche es später erneut.'
     } else {
       errorMessage.value = 'Login fehlgeschlagen. E-Mail oder Passwort falsch.'
     }

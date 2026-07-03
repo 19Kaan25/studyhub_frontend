@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
+import { createPinia, setActivePinia } from 'pinia'
 import HomeView from '../HomeView.vue'
 import http from '../../api/http'
 
@@ -9,19 +10,26 @@ const RouterLinkStub = { template: '<a><slot /></a>' }
 // http (Axios) mocken, damit keine echten Anfragen ans Backend gehen.
 vi.mock('../../api/http', () => ({
   default: {
-    get: vi.fn(),
+    get: vi.fn<() => Promise<unknown>>(),
+    post: vi.fn<() => Promise<unknown>>(),
+    delete: vi.fn<() => Promise<unknown>>(),
   },
+  API_BASE_URL: 'http://localhost:8080',
 }))
 const mockedGet = vi.mocked(http.get)
 
 function mountHome() {
   return mount(HomeView, {
-    global: { stubs: { RouterLink: RouterLinkStub } },
+    global: {
+      plugins: [createPinia()],
+      stubs: { RouterLink: RouterLinkStub },
+    },
   })
 }
 
 describe('HomeView.vue (Use Case: Feed ansehen)', () => {
   beforeEach(() => {
+    setActivePinia(createPinia())
     vi.clearAllMocks()
   })
 

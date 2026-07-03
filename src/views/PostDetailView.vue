@@ -3,16 +3,25 @@ import { onMounted, ref, computed } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import http, { API_BASE_URL } from '../api/http'
 import { useAuthStore } from '../stores/auth'
+import { useFavoritesStore } from '../stores/favorites'
+import CommentList from '../components/CommentList.vue'
+import CommentForm from '../components/CommentForm.vue'
+import FavoriteButton from '../components/FavoriteButton.vue'
 import type { Post, PostType } from '../types/post'
+import type { Comment } from '../types/comment'
 
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
+const favorites = useFavoritesStore()
 
 const post = ref<Post | null>(null)
 const errorMessage = ref('')
 const editing = ref(false)
 const saving = ref(false)
+
+const comments = ref<Comment[]>([])
+const favorited = computed(() => (post.value ? favorites.isFavorite(post.value.id) : false))
 
 const edit = ref<{
   title: string
@@ -53,10 +62,50 @@ onMounted(async () => {
   try {
     const response = await http.get<Post>(`/api/posts/${route.params.id}`)
     post.value = response.data
+    await loadComments()
+    // Favoriten laden, damit der Stern den richtigen Zustand zeigt.
+    if (auth.isLoggedIn && !favorites.loaded) {
+      await favorites.load()
+    }
   } catch {
     errorMessage.value = `Post mit ID ${route.params.id} nicht gefunden.`
   }
 })
+
+async function loadComments() {
+  if (!post.value) return
+  const response = await http.get<Comment[]>(`/api/posts/${post.value.id}/comments`)
+  comments.value = response.data
+}
+
+async function addComment(content: string) {
+  if (!post.value) return
+  try {
+    await http.post(`/api/posts/${post.value.id}/comments`, { content })
+    await loadComments()
+  } catch {
+    errorMessage.value = 'Kommentar konnte nicht gespeichert werden.'
+  }
+}
+
+async function deleteComment(commentId: number) {
+  if (!post.value) return
+  try {
+    await http.delete(`/api/posts/${post.value.id}/comments/${commentId}`)
+    comments.value = comments.value.filter((comment) => comment.id !== commentId)
+  } catch {
+    errorMessage.value = 'Kommentar konnte nicht gelöscht werden.'
+  }
+}
+
+async function toggleFavorite() {
+  if (!post.value) return
+  try {
+    await favorites.toggle(post.value.id)
+  } catch {
+    errorMessage.value = 'Favorit konnte nicht geändert werden.'
+  }
+}
 
 function startEdit() {
   if (!post.value) return
@@ -148,6 +197,12 @@ async function remove() {
           <span class="badge" :class="post.type === 'LINK' ? 'badge-link' : 'badge-doc'">
             {{ post.type === 'LINK' ? 'Link' : 'Dokument' }}
           </span>
+          <FavoriteButton
+            v-if="auth.isLoggedIn"
+            class="head-fav"
+            :favorited="favorited"
+            @toggle="toggleFavorite"
+          />
         </div>
 
         <p v-if="post.content" class="content">{{ post.content }}</p>
@@ -226,6 +281,17 @@ async function remove() {
       </template>
 
       <p v-if="errorMessage" class="error msg">{{ errorMessage }}</p>
+
+      <!-- Kommentare (nur im Anzeige-Modus) -->
+      <section v-if="!editing" class="comment-section">
+        <h3 class="comment-heading">Kommentare</h3>
+        <CommentForm v-if="auth.isLoggedIn" @submit="addComment" />
+        <p v-else class="hint">
+          <RouterLink to="/login">Melde dich an</RouterLink>, um zu kommentieren.
+        </p>
+        <CommentList :comments="comments" :current-user-id="auth.userId" @delete="deleteComment" />
+      </section>
+
       <RouterLink to="/" class="back">← Zurück zum Feed</RouterLink>
     </div>
 
@@ -244,6 +310,22 @@ async function remove() {
   align-items: center;
   gap: 1rem;
   margin-bottom: 1rem;
+}
+.head-fav {
+  margin-left: auto;
+}
+.comment-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+.comment-heading {
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+.hint {
+  color: var(--muted);
+  margin-bottom: 1.5rem;
 }
 .content {
   color: var(--text);

@@ -6,7 +6,7 @@ import http from '../../api/http'
 // http (Axios) mocken – der Store soll nicht wirklich das Backend rufen.
 vi.mock('../../api/http', () => ({
   default: {
-    post: vi.fn(),
+    post: vi.fn<() => Promise<unknown>>(),
   },
 }))
 const mockedPost = vi.mocked(http.post)
