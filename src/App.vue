@@ -10,7 +10,6 @@ const router = useRouter()
 
 function logout() {
   auth.logout()
-  // Favoriten des alten Users verwerfen, sonst bleiben die Sterne hängen.
   favorites.reset()
   router.push('/login')
 }
@@ -174,8 +173,6 @@ function logout() {
   background: rgba(255, 255, 255, 0.12);
   padding: 0.2rem;
   border-radius: 11px;
-  /* schiebt die Pills nach rechts; zusammen mit .nav-right bleibt der Nutzerbereich
-     immer am rechten Rand – auch wenn er in eine zweite Zeile umbricht. */
   margin-left: auto;
 }
 .nav-pill {
@@ -199,6 +196,11 @@ function logout() {
 }
 .nav-pill.light {
   background: rgba(255, 255, 255, 0.12);
+}
+
+.nav-pill.light.router-link-exact-active {
+  background: #fff;
+  color: var(--primary);
 }
 
 /* Nutzerbereich rechts */
