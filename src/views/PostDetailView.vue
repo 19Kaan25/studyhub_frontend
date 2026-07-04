@@ -241,7 +241,7 @@ async function remove() {
         <form @submit.prevent="saveEdit">
           <div class="field">
             <label>Titel</label>
-            <input class="input" v-model="edit.title" type="text" required />
+            <input class="input" v-model="edit.title" type="text" required maxlength="200" />
           </div>
           <div class="field">
             <label>Typ</label>
@@ -252,7 +252,7 @@ async function remove() {
           </div>
           <div class="field">
             <label>Inhalt</label>
-            <textarea class="input" v-model="edit.content" rows="4"></textarea>
+            <textarea class="input" v-model="edit.content" rows="4" maxlength="5000"></textarea>
           </div>
           <div v-if="edit.type === 'LINK'" class="field">
             <label>URL</label>

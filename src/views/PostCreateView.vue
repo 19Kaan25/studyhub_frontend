@@ -143,6 +143,7 @@ async function createPost() {
           v-model="form.title"
           type="text"
           required
+          maxlength="200"
           placeholder="z.B. Spring Boot Tutorial"
         />
       </div>
@@ -161,6 +162,7 @@ async function createPost() {
           class="input"
           v-model="form.content"
           rows="4"
+          maxlength="5000"
           placeholder="Beschreibung / Inhalt"
         ></textarea>
       </div>
